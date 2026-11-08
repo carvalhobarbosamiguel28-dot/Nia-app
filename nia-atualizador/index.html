@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nia — Notícias sobre Inteligência Artificial</title>
+<meta name="description" content="O seu portal diário de notícias sobre Inteligência Artificial.">
+
+<!-- PWA / iOS / iPadOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nia">
+<meta name="theme-color" content="#2563EB">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans: ['Inter','Roboto','system-ui','sans-serif'] },
+  colors: { nia: { DEFAULT:'#2563EB', dark:'#1D4ED8', soft:'#EFF6FF', bg:'#F8FAFC', line:'#E2E8F0' } }
+}}};
+</script>
+<style>
+  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; -webkit-text-size-adjust: 100%; }
+  body { -webkit-font-smoothing: antialiased; padding-bottom: env(safe-area-inset-bottom); }
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-x { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+  .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { scrollbar-width: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 8px; }
+  main a:focus-visible, main button:focus-visible { outline-color: #2563EB; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+
+<body class="bg-nia-bg text-slate-800 font-sans antialiased">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-30 bg-nia text-white safe-top shadow-sm">
+  <div class="max-w-6xl mx-auto safe-x pt-4">
+    <div class="flex items-center gap-3">
+      <span id="logo-header" class="shrink-0"></span>
+      <div class="min-w-0">
+        <h1 class="text-xl font-bold leading-tight tracking-tight">Nia</h1>
+        <p class="text-[13px] text-blue-100 leading-snug">O seu portal diário de notícias sobre Inteligência Artificial</p>
+      </div>
+    </div>
+    <nav id="nav" aria-label="Seções" class="flex gap-1 overflow-x-auto no-scrollbar mt-3 -mx-1 pb-0"></nav>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto safe-x py-8 space-y-14">
+
+  <!-- FEED DIÁRIO -->
+  <section id="hoje" aria-labelledby="t-hoje">
+    <div class="flex items-end justify-between gap-4 mb-5">
+      <div>
+        <h2 id="t-hoje" class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Destaques do dia</h2>
+        <p id="data-hoje" class="text-sm text-slate-500 mt-1"></p>
+      </div>
+    </div>
+    <div id="filtros" class="flex flex-wrap items-center gap-2 mb-5" role="group" aria-label="Filtrar notícias"></div>
+    <div id="feed" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-live="polite"></div>
+
+    <h3 class="text-lg font-semibold text-slate-900 mt-10 mb-3">Lançamentos recentes de modelos</h3>
+    <div id="lancamentos" class="bg-white border border-nia-line rounded-2xl divide-y divide-nia-line"></div>
+  </section>
+
+  <!-- SEÇÕES POR ECOSSISTEMA (geradas por JS) -->
+  <div id="ecossistemas" class="space-y-14"></div>
+
+</main>
+
+<footer class="border-t border-nia-line bg-white">
+  <div class="max-w-6xl mx-auto safe-x py-6 text-sm text-slate-500 flex flex-col sm:flex-row gap-2 justify-between">
+    <span>© <span id="ano"></span> Nia · Notícias sobre Inteligência Artificial</span>
+    <span>Nomes e marcas pertencem aos seus respectivos proprietários.</span>
+  </div>
+</footer>
+
+<script type="module">
+/* ============ MÓDULO: DADOS (edite aqui o conteúdo) ============ */
+const DATA = {
+  feed: [
+    { tag:'Modelos', empresa:'Geral', titulo:'Raciocínio passo a passo vira padrão nos modelos de ponta', resumo:'Os principais laboratórios passaram a oferecer modos de "pensamento estendido", em que o modelo dedica mais tempo a problemas difíceis antes de responder.' },
+    { tag:'Agentes', empresa:'Geral', titulo:'Agentes de IA saem do chat e passam a executar tarefas', resumo:'Assistentes que navegam, preenchem formulários e escrevem código por conta própria ganham espaço em empresas e no uso pessoal.' },
+    { tag:'Regulação', empresa:'Mundo', titulo:'Regras para IA avançam em várias regiões do mundo', resumo:'Governos discutem transparência, segurança e responsabilidade para sistemas de IA de uso geral.' },
+    { tag:'Código aberto', empresa:'Meta', titulo:'Modelos abertos reduzem a distância para os fechados', resumo:'Pesos abertos permitem que pesquisadores e empresas adaptem modelos para suas necessidades e rodem-nos em infraestrutura própria.' },
+    { tag:'Multimodal', empresa:'Google', titulo:'Modelos que entendem texto, imagem, áudio e vídeo juntos', resumo:'A compreensão multimodal nativa abre caminho para assistentes que "veem" e "ouvem" o contexto do usuário.' },
+    { tag:'Segurança', empresa:'Anthropic', titulo:'Pesquisa de interpretabilidade tenta abrir a "caixa-preta"', resumo:'Estudos buscam entender o que acontece dentro dos modelos para torná-los mais previsíveis e confiáveis.' },
+  ],
+  lancamentos: [
+    { modelo:'Família GPT', empresa:'OpenAI', nota:'Modelos de raciocínio e multimodais disponíveis no ChatGPT e na API.' },
+    { modelo:'Família Claude', empresa:'Anthropic', nota:'Modelos em diferentes tamanhos, com foco em código, análise e segurança.' },
+    { modelo:'Família Gemini', empresa:'Google', nota:'Modelos multimodais integrados à Busca, ao Android e ao Workspace.' },
+    { modelo:'Família Llama', empresa:'Meta', nota:'Modelos de pesos abertos para pesquisa e uso comercial.' },
+  ],
+  empresas: [
+    { id:'openai', nome:'ChatGPT · OpenAI', cor:'#10A37F', glifo:'openai',
+      resumo:'O assistente que popularizou a IA generativa para o grande público.',
+      novidades:[
+        ['Modelos de raciocínio','A OpenAI oferece modelos que "pensam" antes de responder, com bom desempenho em matemática, ciência e programação. A ideia é trocar velocidade por precisão em problemas complexos.'],
+        ['Multimodalidade e voz','O ChatGPT aceita texto, imagens e voz, e consegue analisar arquivos, gerar imagens e conversar em tempo real em modo de voz.'],
+        ['Agentes e ferramentas','Recursos como navegação, execução de código e conectores permitem que o assistente realize tarefas em várias etapas, além de responder perguntas.'],
+      ],
+      sobre:{ titulo:'Sobre a OpenAI', texto:'A OpenAI é um laboratório de pesquisa e empresa de IA sediada em São Francisco, fundada em 2015. Sua missão declarada é garantir que a inteligência artificial geral beneficie toda a humanidade. É responsável pelos modelos GPT, pelo ChatGPT, pelo gerador de imagens DALL·E e pelo modelo de fala Whisper. Para se aprofundar, vale acompanhar os artigos de pesquisa e o blog oficial da empresa.' } },
+    { id:'anthropic', nome:'Claude · Anthropic', cor:'#C2410C', glifo:'anthropic',
+      resumo:'Assistente conhecido por textos longos, análise de documentos e programação.',
+      novidades:[
+        ['Família de modelos','O Claude é oferecido em tamanhos diferentes, de modelos rápidos e econômicos a modelos mais capazes para tarefas difíceis, via app, API e plataformas de nuvem.'],
+        ['Código e agentes','O Claude Code leva o modelo para o terminal, onde ele lê projetos, edita arquivos e executa comandos, apoiando desenvolvedores em tarefas de várias etapas.'],
+        ['Contexto longo e documentos','O modelo lida bem com documentos extensos, planilhas e PDFs, e pode gerar arquivos e interfaces interativas dentro da conversa.'],
+      ],
+      sobre:{ titulo:'Sobre a Anthropic', texto:'A Anthropic é uma empresa de pesquisa e segurança em IA fundada em 2021 por ex-integrantes da OpenAI, com sede em São Francisco. É constituída como "public benefit corporation" e dá grande ênfase à segurança, à interpretabilidade e ao alinhamento de modelos. Desenvolveu a abordagem de "IA Constitucional" para orientar o comportamento do Claude por princípios explícitos.' } },
+    { id:'google', nome:'Gemini · Google', cor:'#4285F4', glifo:'google',
+      resumo:'IA multimodal do Google, integrada à Busca, ao Android e aos serviços Workspace.',
+      novidades:[
+        ['Multimodal desde a origem','O Gemini foi projetado para lidar com texto, código, imagem, áudio e vídeo no mesmo modelo, o que facilita tarefas que misturam formatos.'],
+        ['Integração com o ecossistema','O assistente aparece no Gmail, Docs, Android e na Busca, trazendo resumos e respostas geradas por IA para produtos usados diariamente.'],
+        ['Janela de contexto ampla','Alguns modelos Gemini aceitam entradas muito longas, como horas de vídeo ou grandes bases de código, em uma única consulta.'],
+      ],
+      sobre:{ titulo:'Sobre o Google DeepMind', texto:'O Google DeepMind nasceu em 2023 da união do DeepMind, fundado em Londres em 2010 e adquirido pelo Google em 2014, com o Google Brain. É conhecido pelo AlphaGo, que venceu campeões de Go, e pelo AlphaFold, que previu a estrutura de proteínas e rendeu o Nobel de Química de 2024 a seus criadores. Hoje lidera o desenvolvimento dos modelos Gemini.' } },
+    { id:'meta', nome:'Llama · Meta AI', cor:'#0866FF', glifo:'meta',
+      resumo:'A aposta da Meta em modelos de pesos abertos para a comunidade.',
+      novidades:[
+        ['Pesos abertos','Os modelos Llama podem ser baixados, ajustados e executados em infraestrutura própria, o que atrai pesquisadores, startups e empresas.'],
+        ['Meta AI nos apps','O assistente Meta AI está presente no WhatsApp, Instagram e Messenger, levando a IA generativa a bilhões de usuários.'],
+        ['Ecossistema aberto','Uma comunidade ampla cria derivados, ferramentas de otimização e versões compactas para rodar em notebooks e celulares.'],
+      ],
+      sobre:{ titulo:'Sobre a Meta AI', texto:'A Meta AI é a divisão de pesquisa em IA da Meta (dona do Facebook, Instagram e WhatsApp). Sua origem remonta ao FAIR, laboratório criado em 2013 e liderado por Yann LeCun, um dos pioneiros do aprendizado profundo. A empresa defende que modelos abertos aceleram a inovação e ampliam o acesso à tecnologia.' } },
+  ]
+};
+
+/* ============ MÓDULO: ÍCONES E LOGOS (SVG próprios) ============ */
+const Logo = (size = 44) => `
+<svg width="${size}" height="${size}" viewBox="0 0 64 64" role="img" aria-label="Logo Nia" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="15" fill="#fff"/>
+  <rect x="11" y="13" width="34" height="38" rx="6" fill="#F1F5F9"/>
+  <path d="M19 43V22h4.2l9.6 14V22H37v21h-4.2l-9.6-14v14z" fill="#2563EB"/>
+  <rect x="19" y="46" width="18" height="2.4" rx="1.2" fill="#CBD5E1" opacity=".0"/>
+  <path d="M48 8l2.6 6.4L57 17l-6.4 2.6L48 26l-2.6-6.4L39 17l6.4-2.6z" fill="#2563EB"/>
+  <rect x="41" y="34" width="12" height="3" rx="1.5" fill="#CBD5E1"/>
+  <rect x="41" y="40" width="12" height="3" rx="1.5" fill="#CBD5E1"/>
+  <rect x="41" y="46" width="8" height="3" rx="1.5" fill="#CBD5E1"/>
+</svg>`;
+
+// Glifos representativos (desenhos simples e próprios, não são os logotipos oficiais)
+const GLIFOS = {
+  openai:'<circle cx="12" cy="12" r="3"/><g fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="9" ry="4.2"/><ellipse cx="12" cy="12" rx="9" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="4.2" transform="rotate(120 12 12)"/></g>',
+  anthropic:'<path d="M12 3l1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8z"/><path d="M12 3v16M4 11h16" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  google:'<path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>',
+  meta:'<path d="M3 16c0-5 2.5-9 5-9 3 0 4 5 4 5s1-5 4-5c2.5 0 5 4 5 9 0 2-1 3-2.5 3-2.5 0-3.5-3-6.5-3s-4 3-6.5 3C4 19 3 18 3 16z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>',
+};
+const Glifo = (e, size = 48) => `
+<span class="inline-flex items-center justify-center rounded-xl shrink-0" style="width:${size}px;height:${size}px;background:${e.cor}1A;color:${e.cor}">
+  <svg viewBox="0 0 24 24" width="${size*0.55}" height="${size*0.55}" fill="currentColor" aria-hidden="true">${GLIFOS[e.glifo]}</svg>
+</span>`;
+
+// Ilustração abstrata limpa (SVG inline, sem imagens externas)
+const Ilustracao = (cor, variante = 0) => {
+  const f = [
+    `<circle cx="300" cy="60" r="90" fill="${cor}" opacity=".12"/><circle cx="90" cy="150" r="60" fill="${cor}" opacity=".1"/>`,
+    `<rect x="230" y="20" width="150" height="150" rx="30" fill="${cor}" opacity=".12" transform="rotate(12 300 100)"/><circle cx="80" cy="60" r="40" fill="${cor}" opacity=".1"/>`,
+    `<circle cx="320" cy="140" r="100" fill="${cor}" opacity=".1"/><rect x="40" y="30" width="110" height="110" rx="24" fill="${cor}" opacity=".12"/>`,
+  ][variante % 3];
+  return `<svg viewBox="0 0 400 180" class="w-full h-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="400" height="180" fill="#F1F5F9"/>${f}
+    <g fill="#fff" stroke="#E2E8F0"><rect x="110" y="40" width="180" height="100" rx="12"/></g>
+    <g fill="${cor}"><rect x="128" y="58" width="70" height="8" rx="4"/></g>
+    <g fill="#CBD5E1"><rect x="128" y="78" width="144" height="6" rx="3"/><rect x="128" y="92" width="120" height="6" rx="3"/><rect x="128" y="106" width="90" height="6" rx="3"/></g>
+  </svg>`;
+};
+
+/* ============ MÓDULO: COMPONENTES ============ */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const NavLink = (href, label) =>
+  `<a href="${href}" class="whitespace-nowrap px-3.5 py-2.5 text-sm font-medium text-blue-100 hover:text-white hover:bg-white/10 rounded-t-lg border-b-2 border-transparent data-[ativo=true]:text-white data-[ativo=true]:border-white" data-nav>${esc(label)}</a>`;
+
+const Chip = (t, v, on, extra = '') => `
+<button type="button" data-t="${t}" data-v="${esc(v)}" aria-pressed="${on}"
+  class="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${on
+    ? 'bg-nia text-white border-nia'
+    : (t === 'tag' ? 'bg-nia-soft text-nia border-blue-100 hover:bg-blue-100' : 'bg-white text-slate-600 border-nia-line hover:bg-slate-100')} ${extra}">${esc(v)}</button>`;
+
+const FeedCard = (n, i, on) => `
+<article class="bg-white border border-nia-line rounded-2xl overflow-hidden flex flex-col">
+  <div class="h-28">${Ilustracao('#2563EB', i)}</div>
+  <div class="p-5 flex flex-col gap-2 flex-1">
+    <div class="flex items-center gap-2">
+      ${Chip('tag', n.tag, on('tag', n.tag))}
+      ${Chip('empresa', n.empresa, on('empresa', n.empresa))}
+    </div>
+    <h3 class="font-semibold text-slate-900 leading-snug">${esc(n.titulo)}</h3>
+    <p class="text-sm text-slate-600 leading-relaxed">${esc(n.resumo)}</p>
+    ${n.link ? `<a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer" class="mt-auto pt-2 text-sm font-semibold text-nia hover:underline">Ler matéria completa</a>` : ''}
+  </div>
+</article>`;
+
+const Lancamento = l => `
+<div class="flex items-start gap-3 p-4">
+  <span class="mt-1.5 w-2 h-2 rounded-full bg-nia shrink-0"></span>
+  <div><p class="font-semibold text-slate-900">${esc(l.modelo)} <span class="font-normal text-slate-500">· ${esc(l.empresa)}</span></p>
+  <p class="text-sm text-slate-600 mt-0.5">${esc(l.nota)}</p></div>
+</div>`;
+
+const Ecossistema = (e, i) => `
+<section id="${e.id}" aria-labelledby="t-${e.id}">
+  <div class="bg-white border border-nia-line rounded-3xl overflow-hidden">
+    <div class="h-40 sm:h-52">${Ilustracao(e.cor, i)}</div>
+    <div class="p-5 sm:p-8">
+      <div class="flex items-center gap-4 -mt-14 sm:-mt-16 mb-5">
+        <span class="p-1.5 bg-white rounded-2xl border border-nia-line shadow-sm">${Glifo(e, 56)}</span>
+      </div>
+      <h2 id="t-${e.id}" class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">${esc(e.nome)}</h2>
+      <p class="text-slate-600 mt-1 max-w-2xl">${esc(e.resumo)}</p>
+
+      <div class="grid gap-4 md:grid-cols-3 mt-6">
+        ${e.novidades.map(([t, p]) => `
+        <article class="bg-nia-bg border border-nia-line rounded-2xl p-5">
+          <h3 class="font-semibold text-slate-900">${esc(t)}</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mt-2">${esc(p)}</p>
+        </article>`).join('')}
+      </div>
+
+      <aside class="mt-6 rounded-2xl bg-nia-soft border border-blue-100 p-5 sm:p-6" aria-label="Saiba mais sobre a empresa">
+        <div class="flex items-center gap-3 mb-2">
+          ${Glifo(e, 36)}
+          <div>
+            <p class="text-xs font-semibold text-nia">Saiba mais sobre a empresa</p>
+            <h3 class="font-bold text-slate-900">${esc(e.sobre.titulo)}</h3>
+          </div>
+        </div>
+        <p class="text-sm text-slate-700 leading-relaxed max-w-3xl">${esc(e.sobre.texto)}</p>
+      </aside>
+    </div>
+  </div>
+</section>`;
+
+/* ============ MÓDULO: APP ============ */
+const $ = s => document.querySelector(s);
+
+function render() {
+  $('#logo-header').innerHTML = Logo(44);
+  $('#nav').innerHTML = NavLink('#hoje', 'Hoje') +
+    DATA.empresas.map(e => NavLink('#' + e.id, e.nome.split(' · ')[1])).join('');
+  renderFeed();
+  $('#lancamentos').innerHTML = DATA.lancamentos.map(Lancamento).join('');
+  $('#ecossistemas').innerHTML = DATA.empresas.map(Ecossistema).join('');
+  $('#ano').textContent = new Date().getFullYear();
+  const d = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  $('#data-hoje').textContent = d.charAt(0).toUpperCase() + d.slice(1);
+}
+
+let feed = DATA.feed;   // substituído por noticias.json quando existir
+let filtro = null;      // { t: 'tag' | 'empresa', v: valor }
+const ligado = (t, v) => !!filtro && filtro.t === t && filtro.v === v;
+
+function renderFeed() {
+  const lista = filtro ? feed.filter(n => n[filtro.t] === filtro.v) : feed;
+  const tags = [...new Set(feed.map(n => n.tag))];
+  const emps = [...new Set(feed.map(n => n.empresa))];
+  $('#filtros').innerHTML =
+    `<button type="button" id="limpar" aria-pressed="${!filtro}" class="px-3 py-1.5 rounded-full text-xs font-semibold border ${!filtro ? 'bg-nia text-white border-nia' : 'bg-white text-slate-600 border-nia-line hover:bg-slate-100'}">Todas</button>` +
+    tags.map(v => Chip('tag', v, ligado('tag', v))).join('') +
+    `<span class="w-px h-5 bg-nia-line mx-1" aria-hidden="true"></span>` +
+    emps.map(v => Chip('empresa', v, ligado('empresa', v))).join('');
+  $('#feed').innerHTML = lista.length
+    ? lista.map((n, i) => FeedCard(n, i, ligado)).join('')
+    : `<p class="col-span-full text-slate-500 text-sm">Nenhuma notícia com este filtro.</p>`;
+}
+
+document.addEventListener('click', e => {
+  if (e.target.closest('#limpar')) { filtro = null; return renderFeed(); }
+  const b = e.target.closest('button[data-t]');
+  if (!b) return;
+  const novo = { t: b.dataset.t, v: b.dataset.v };
+  filtro = ligado(novo.t, novo.v) ? null : novo;   // clicar de novo desliga o filtro
+  renderFeed();
+  $('#filtros').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+
+async function carregarNoticias() {
+  try {
+    const r = await fetch('noticias.json', { cache: 'no-cache' });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (Array.isArray(j) && j.length) { feed = j; renderFeed(); }
+  } catch (_) { /* sem noticias.json: mantém as notícias de exemplo */ }
+}
+
+function observarSecoes() {
+  const links = [...document.querySelectorAll('[data-nav]')];
+  const marcar = id => links.forEach(a => a.dataset.ativo = String(a.getAttribute('href') === '#' + id));
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) marcar(en.target.id); });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  document.querySelectorAll('main section[id]').forEach(s => io.observe(s));
+  marcar('hoje');
+}
+
+render();
+observarSecoes();
+carregarNoticias();
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+[
+  {
+    "tag": "Modelos",
+    "empresa": "Geral",
+    "titulo": "Raciocínio passo a passo vira padrão nos modelos de ponta",
+    "resumo": "Os principais laboratórios passaram a oferecer modos de pensamento estendido, em que o modelo dedica mais tempo a problemas difíceis antes de responder.",
+    "link": ""
+  },
+  {
+    "tag": "Agentes",
+    "empresa": "Geral",
+    "titulo": "Agentes de IA saem do chat e passam a executar tarefas",
+    "resumo": "Assistentes que navegam, preenchem formulários e escrevem código por conta própria ganham espaço em empresas e no uso pessoal.",
+    "link": ""
+  },
+  {
+    "tag": "Regulação",
+    "empresa": "Mundo",
+    "titulo": "Regras para IA avançam em várias regiões do mundo",
+    "resumo": "Governos discutem transparência, segurança e responsabilidade para sistemas de IA de uso geral.",
+    "link": ""
+  },
+  {
+    "tag": "Código aberto",
+    "empresa": "Meta",
+    "titulo": "Modelos abertos reduzem a distância para os fechados",
+    "resumo": "Pesos abertos permitem que pesquisadores e empresas adaptem modelos e os rodem em infraestrutura própria.",
+    "link": ""
+  },
+  {
+    "tag": "Multimodal",
+    "empresa": "Google",
+    "titulo": "Modelos que entendem texto, imagem, áudio e vídeo juntos",
+    "resumo": "A compreensão multimodal nativa abre caminho para assistentes que veem e ouvem o contexto do usuário.",
+    "link": ""
+  },
+  {
+    "tag": "Segurança",
+    "empresa": "Anthropic",
+    "titulo": "Pesquisa de interpretabilidade tenta abrir a caixa-preta",
+    "resumo": "Estudos buscam entender o que acontece dentro dos modelos para torná-los mais previsíveis e confiáveis.",
+    "link": ""
+  }
+]
